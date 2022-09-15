@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "directories": {
-    "lib": "lib"
+    "lib": "lib",
+    "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --verbose test/*"
   },
   "repository": {
     "type": "git",
@@ -19,7 +20,10 @@
     "url": "https://github.com/shanissewilson/team_profile_generator/issues"
   },
   "homepage": "https://github.com/shanissewilson/team_profile_generator#readme",
+  "dependencies": {
+    "inquirer": "^8.2.4"
+  },
   "devDependencies": {
-    "jest-cli": "^29.0.3"
+    "jest": "^29.0.3"
   }
 }
