@@ -11,3 +11,6 @@ Shanisse Wilson: https://github.com/shanissewilson
 # Credits 
 Tutoring 
 https://github.com/topics/team-profile-generator
+
+# Video Demo 
+https://watch.screencastify.com/v/YgKI9O4X9NRLDo8Stamo 
