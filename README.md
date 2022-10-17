@@ -9,8 +9,9 @@ Users will first run "npm install" in the command line, follwing with "node inde
 Shanisse Wilson: https://github.com/shanissewilson
 
 # Credits 
-Tutoring 
-https://github.com/topics/team-profile-generator
+Several tutoring sessions 
+https://kit.fontawesome.com/c502137733.js
+https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css
 
 # Video Demo 
 https://watch.screencastify.com/v/YgKI9O4X9NRLDo8Stamo 
