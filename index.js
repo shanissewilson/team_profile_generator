@@ -1,39 +1,66 @@
-const Manager = require("./lib/Manager");
-const Engineer = require("./lib/Engineer");
-const Intern = require("./lib/Intern");
-const inquirer = require("inquirer");
 const path = require("path");
+const Intern = require("./lib/Intern");
 const fs = require("fs");
+const Engineer = require("./lib/Engineer");
+const Manager = require("./lib/Manager");
+const inquirer = require("inquirer");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output")
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./src/page-template.js");
 
-const teamMembers = [];
-const idArray = [];
+const team = [];
+const ids = [];
 
 
 function appMenu() {
 
-    function createManager() {
-      console.log("Please build your team");
+    function addTeam() {
+  
+      inquirer.prompt([
+        {
+          type: "list",
+          name: "memberChoice",
+          message: "Select a position?",
+          choices: [
+            "Engineer",
+            "Intern",
+            "I don't want to add any more team members"
+          ]
+        }
+      ]).then(userChoice => {
+        switch (userChoice.memberChoice) {
+          case "Engineer":
+            createEngineer();
+            break;
+          case "Intern":
+            createIntern();
+            break;
+          default:
+            makeTeam();
+        }
+      });
+    }
+  
+    function addManager() {
+      console.log("Build a team");
       inquirer.prompt([
         {
           type: "input",
           name: "managerName",
-          message: "What is the team manager's name?",
+          message: "What your manager's name?",
           validate: answer => {
             if (answer !== "") {
               return true;
             }
-            return "Please enter at least one character.";
+            return "Please enter something!";
           }
         },
         {
           type: "input",
           name: "managerId",
-          message: "What is the team manager's id?",
+          message: "What your manager's id?",
           validate: answer => {
             const pass = answer.match(
               /^[1-9]\d*$/
@@ -41,7 +68,7 @@ function appMenu() {
             if (pass) {
               return true;
             }
-            return "Please enter a positive number greater than zero.";
+            return "Please enter a number greater than zero.";
           }
         },
         {
@@ -61,7 +88,7 @@ function appMenu() {
         {
           type: "input",
           name: "managerOfficeNumber",
-          message: "What is the team manager's office number?",
+          message: "What your manager's office number?",
           validate: answer => {
             const pass = answer.match(
               /^[1-9]\d*$/
@@ -69,45 +96,83 @@ function appMenu() {
             if (pass) {
               return true;
             }
-            return "Please enter a positive number greater than zero.";
+            return "Please enter a number greater than zero.";
           }
         }
       ]).then(answers => {
         const manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.managerOfficeNumber);
-        teamMembers.push(manager);
-        idArray.push(answers.managerId);
-        createTeam();
+        team.push(manager);
+        ids.push(answers.managerId);
+        addTeam();
       });
     }
   
-    function createTeam() {
-  
+    function createIntern() {
       inquirer.prompt([
         {
-          type: "list",
-          name: "memberChoice",
-          message: "Which type of team member would you like to add?",
-          choices: [
-            "Engineer",
-            "Intern",
-            "I don't want to add any more team members"
-          ]
+          type: "input",
+          name: "internName",
+          message: "What is your intern's name?",
+          validate: answer => {
+            if (answer !== "") {
+              return true;
+            }
+            return "Please enter at least one character.";
+          }
+        },
+        {
+          type: "input",
+          name: "internId",
+          message: "What is your intern's id?",
+          validate: answer => {
+            const pass = answer.match(
+              /^[1-9]\d*$/
+            );
+            if (pass) {
+              if (ids.includes(answer)) {
+                return "This ID is already taken. Please choose a different id.";
+              } else {
+                return true;
+              }
+  
+            }
+            return "Please enter a number greater than zero.";
+          }
+        },
+        {
+          type: "input",
+          name: "internEmail",
+          message: "What is your intern's email?",
+          validate: answer => {
+            const pass = answer.match(
+              /\S+@\S+\.\S+/
+            );
+            if (pass) {
+              return true;
+            }
+            return "Please enter a valid email address.";
+          }
+        },
+        {
+          type: "input",
+          name: "internSchool",
+          message: "What is your intern's school?",
+          validate: answer => {
+            if (answer !== "") {
+              return true;
+            }
+            return "Please enter something!";
+          }
         }
-      ]).then(userChoice => {
-        switch (userChoice.memberChoice) {
-          case "Engineer":
-            addEngineer();
-            break;
-          case "Intern":
-            addIntern();
-            break;
-          default:
-            buildTeam();
-        }
+      ]).then(answers => {
+        const intern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.internSchool);
+        team.push(intern);
+        ids.push(answers.internId);
+        addTeam();
       });
     }
-  
-    function addEngineer() {
+
+    function createEngineer() {
       inquirer.prompt([
         {
           type: "input",
@@ -129,8 +194,8 @@ function appMenu() {
               /^[1-9]\d*$/
             );
             if (pass) {
-              if (idArray.includes(answer)) {
-                return "This ID is already taken. Please enter a different number.";
+              if (ids.includes(answer)) {
+                return "This ID is already taken. Please enter a different id.";
               } else {
                 return true;
               }
@@ -166,86 +231,21 @@ function appMenu() {
         }
       ]).then(answers => {
         const engineer = new Engineer(answers.engineerName, answers.engineerId, answers.engineerEmail, answers.engineerGithub);
-        teamMembers.push(engineer);
-        idArray.push(answers.engineerId);
-        createTeam();
+        team.push(engineer);
+        ids.push(answers.engineerId);
+        addTeam();
       });
     }
   
-    function addIntern() {
-      inquirer.prompt([
-        {
-          type: "input",
-          name: "internName",
-          message: "What is your intern's name?",
-          validate: answer => {
-            if (answer !== "") {
-              return true;
-            }
-            return "Please enter at least one character.";
-          }
-        },
-        {
-          type: "input",
-          name: "internId",
-          message: "What is your intern's id?",
-          validate: answer => {
-            const pass = answer.match(
-              /^[1-9]\d*$/
-            );
-            if (pass) {
-              if (idArray.includes(answer)) {
-                return "This ID is already taken. Please enter a different number.";
-              } else {
-                return true;
-              }
-  
-            }
-            return "Please enter a positive number greater than zero.";
-          }
-        },
-        {
-          type: "input",
-          name: "internEmail",
-          message: "What is your intern's email?",
-          validate: answer => {
-            const pass = answer.match(
-              /\S+@\S+\.\S+/
-            );
-            if (pass) {
-              return true;
-            }
-            return "Please enter a valid email address.";
-          }
-        },
-        {
-          type: "input",
-          name: "internSchool",
-          message: "What is your intern's school?",
-          validate: answer => {
-            if (answer !== "") {
-              return true;
-            }
-            return "Please enter at least one character.";
-          }
-        }
-      ]).then(answers => {
-        const intern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.internSchool);
-        teamMembers.push(intern);
-        idArray.push(answers.internId);
-        createTeam();
-      });
-    }
-  
-    function buildTeam() {
+    function makeTeam() {
       // Create the output directory if the output path doesn't exist
       if (!fs.existsSync(OUTPUT_DIR)) {
         fs.mkdirSync(OUTPUT_DIR)
       }
-      fs.writeFileSync(outputPath, render(teamMembers), "utf-8");
+      fs.writeFileSync(outputPath, render(team), "utf-8");
     }
   
-    createManager();
+    addManager();
   
   }
   
